@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Ripieno">
+  <g stroke="#9aa5a8" stroke-width="2">
+    <path d="M10 34 H110"/><path d="M10 47 H110"/><path d="M10 60 H110"/><path d="M10 73 H110"/><path d="M10 86 H110"/>
+  </g>
+  <path d="M40 100 V20 H66 A20 20 0 0 1 66 60 H40 M62 60 L86 100" fill="none" stroke="#1f2a2e" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="86" cy="100" r="8" fill="#c2410c"/>
+</svg>

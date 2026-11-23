@@ -1,0 +1,74 @@
+{
+ "part0-chord1-section0": {
+  "total_time": 3.0,
+  "total_frames": 250,
+  "step": 125,
+  "start_frames": [
+   0
+  ],
+  "midi_rolls": [
+   "0ee6e69fd335def2cc46e435365ab3c390a7ed0a0f58ec2b443dd05b425b9314"
+  ],
+  "tech_rolls": [
+   "2afc630252763d3b1bb27bd1ada338f7286023c6f8b862fc1d62cddbe774bf5f"
+  ],
+  "shapes": [
+   [
+    51,
+    1000
+   ],
+   [
+    13,
+    1000
+   ]
+  ]
+ },
+ "part0-section0": {
+  "total_time": 4.0,
+  "total_frames": 250,
+  "step": 125,
+  "start_frames": [
+   0
+  ],
+  "midi_rolls": [
+   "d4535fa4ccacd81c93d0f32bce1b7e7cab9de34897db92957e3cc57357a4f3c7"
+  ],
+  "tech_rolls": [
+   "ea737118a4991cdaecbe1f6ab9bad0dbd95d3ce6767621752017bff06101dcc8"
+  ],
+  "shapes": [
+   [
+    51,
+    1000
+   ],
+   [
+    13,
+    1000
+   ]
+  ]
+ },
+ "part0-section1": {
+  "total_time": 3.5,
+  "total_frames": 250,
+  "step": 125,
+  "start_frames": [
+   0
+  ],
+  "midi_rolls": [
+   "0c9d44f4dd11c535a1ce86f5c0fcfad328302cf74b36984e90d35f8da5f37007"
+  ],
+  "tech_rolls": [
+   "2ed08cc56ed28849e0b13708579e4f0c2d3afc861c5f144bc9e4ef6c701047c5"
+  ],
+  "shapes": [
+   [
+    51,
+    1000
+   ],
+   [
+    13,
+    1000
+   ]
+  ]
+ }
+}

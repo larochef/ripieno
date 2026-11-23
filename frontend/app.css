@@ -1,0 +1,1411 @@
+/* One set of fonts on every system, bundled with the page: the system's own
+   would lay text out differently from one machine to the next. */
+:root {
+  --bulma-family-primary: "Source Sans 3 Variable", "Noto Music", sans-serif;
+  --bulma-family-secondary: "Source Sans 3 Variable", "Noto Music", sans-serif;
+  --bulma-family-code: ui-monospace, monospace;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Source Sans 3 Variable", "Noto Music", sans-serif;
+}
+
+/* the engraved score's text: Verovio sets it in Times, laid out with its
+   metrics; Tinos has the same */
+.sheet svg {
+  font-family: Tinos, serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* one page at a time, the others mounted but hidden */
+.layout {
+  height: 100vh;
+}
+
+.layout > [hidden] {
+  display: none !important;
+}
+
+.layout > .stage {
+  height: 100vh;
+}
+
+.page-library,
+.page-work {
+  height: 100vh;
+  overflow-y: auto;
+  background: #f4f3ef;
+}
+
+.library {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-right: 1px solid var(--bulma-border);
+  min-height: 0;
+}
+
+.library-list {
+  overflow-y: auto;
+  min-height: 0;
+  font-size: 0.85rem;
+}
+
+.library-entry {
+  display: block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.library-path {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.library-crumb {
+  color: inherit;
+}
+
+.library-crumb + .library-crumb::before {
+  content: " / ";
+  opacity: 0.5;
+}
+
+.library-entry.is-folder {
+  font-weight: 600;
+  color: inherit;
+}
+
+.library-error {
+  font-size: 0.85rem;
+}
+
+.library-entry.is-active {
+  background: var(--bulma-link);
+  color: var(--bulma-link-invert);
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.review-warning {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+}
+
+/* above the score: library, name, modes, the part played, the tools */
+/* one row, whatever part is chosen: the sheet must not move when the
+   controls change; the title gives way first */
+.score-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bulma-border);
+  background: var(--bulma-scheme-main);
+}
+
+.score-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.part-chooser {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.guide-choice {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* too narrow for one row: two, the tools on the second */
+@media (max-width: 1100px) {
+  .score-header {
+    flex-wrap: wrap;
+  }
+}
+
+.part-chooser[hidden],
+.guide-choice[hidden] {
+  display: none;
+}
+
+.score-tools {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  margin-left: auto;
+}
+
+
+/* below the score, as on a player */
+.player-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  background: #1f2a2e;
+  color: #f1f1ee;
+}
+
+.player-progress,
+.player-controls,
+.player-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-controls {
+  flex-wrap: wrap;
+}
+
+/* the tempo playing; it opens the tempo drawer */
+.player-tempo {
+  font: inherit;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 10px;
+  border: 1px solid #3a474b;
+  border-radius: 6px;
+  background: #2b383c;
+  color: #f1f1ee;
+  cursor: pointer;
+}
+
+.player-tempo-section {
+  opacity: 0.6;
+}
+
+/* the section playing; a score at one tempo has only that */
+.player-tempo-section.is-playing {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.player-tempo-gap {
+  margin: 0 0.5em;
+  opacity: 0.4;
+}
+
+.player-tempo.is-open {
+  border-color: #6fa8dc;
+}
+
+.player-label,
+.player-time {
+  font-size: 0.85rem;
+  color: #b9c2c4;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #3a474b;
+  overflow: hidden;
+}
+
+.player-track-done {
+  height: 100%;
+  background: #7cc4d2;
+}
+
+.player-field,
+.player-select {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  border: 1px solid #3a474b;
+  border-radius: 6px;
+  background: #2b383c;
+  color: #f1f1ee;
+}
+
+.player-field.measure-field {
+  width: 3.5em;
+  text-align: center;
+}
+
+.player-field.tempo-field {
+  width: 4em;
+  text-align: center;
+}
+
+.player-play,
+.player-round,
+.player-small,
+.player-record,
+.player-link {
+  font: inherit;
+  border: 0;
+  color: #f1f1ee;
+  cursor: pointer;
+}
+
+.player-play {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background: #7cc4d2;
+  color: #10272d;
+  font-size: 1.1rem;
+}
+
+.player-round {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: #33434a;
+}
+
+.player-small {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: #33434a;
+}
+
+.player-record {
+  padding: 9px 16px;
+  border-radius: 20px;
+  background: #b4400c;
+  font-weight: 600;
+}
+
+.player-record.is-recording {
+  background: #e05a2a;
+}
+
+.player-link {
+  background: transparent;
+  font-size: 0.85rem;
+  color: #b9c2c4;
+  text-decoration: underline;
+}
+
+.player-bar button:disabled,
+.player-bar input:disabled,
+.player-bar select:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.player-separator {
+  width: 1px;
+  height: 28px;
+  background: #3a474b;
+}
+
+.player-status {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #b9c2c4;
+  text-align: right;
+}
+
+.player-bar .level-meter {
+  width: 80px;
+  height: 10px;
+  border-radius: 3px;
+  background: #3a474b;
+  overflow: hidden;
+}
+
+.player-bar .level-meter[hidden] {
+  display: none;
+}
+
+.player-bar .level-meter-bar {
+  height: 100%;
+  background: #4caf50;
+}
+
+.player-bar .level-meter.is-saturated .level-meter-bar {
+  background: #ff5252;
+}
+
+.sounds {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--bulma-border);
+}
+
+.sounds-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.sounds-section[hidden],
+.tempo-actions[hidden] {
+  display: none;
+}
+
+.sounds-title {
+  font-weight: 600;
+}
+
+.sounds-note {
+  opacity: 0.75;
+}
+
+.score-editor[hidden] {
+  display: none;
+}
+
+.stage-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* the review and the recordings, beside the sheet; nothing to show, no panel */
+.side-panel {
+  width: 400px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--bulma-border);
+}
+
+.side-panel:not(:has(.review, .history, .tuner, .metronome, .tempi, .passages, .sounds, .checks)) {
+  display: none;
+}
+
+.sheet-scroller {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--bulma-background);
+}
+
+/* while a score is prepared and engraved, in place of the one shown before */
+.sheet-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--bulma-text-weak);
+}
+
+.sheet-loading[hidden] {
+  display: none;
+}
+
+.sheet-loader {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--bulma-border);
+  border-top-color: var(--bulma-link);
+  border-radius: 50%;
+  animation: sheet-turning 0.8s linear infinite;
+}
+
+@keyframes sheet-turning {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* a page keeps a page's place until it is engraved, then takes its own height */
+.sheet .page {
+  max-width: 1000px;
+  margin: 0 auto 16px;
+  background: white;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+  aspect-ratio: 2100 / 2970;
+}
+
+.sheet .page.is-engraved {
+  aspect-ratio: auto;
+}
+
+.sheet .page svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sheet g.note,
+.sheet g.label,
+.sheet g.labelAbbr {
+  cursor: pointer;
+}
+
+.score-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--bulma-border);
+  font-size: 0.85rem;
+}
+
+.score-editor .editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.score-editor .editor-panel[hidden] {
+  display: none;
+}
+
+.score-editor .editor-group,
+.score-editor .editor-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-editor .editor-buttons[hidden] {
+  display: none;
+}
+
+.score-editor .editor-name {
+  width: 10em;
+}
+
+/* the editor and the selection, on one line under the toolbar */
+.sheet-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--bulma-border);
+}
+
+.sheet-tools .score-editor {
+  border-bottom: none;
+}
+
+.range-bar,
+.range-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+}
+
+.range-bar[hidden],
+.range-controls[hidden],
+.range-hint[hidden] {
+  display: none;
+}
+
+.range-controls {
+  padding: 0;
+}
+
+.range-hint {
+  opacity: 0.6;
+}
+
+/* a suspect measure's notes, shown from the measures to check */
+.sheet g.is-suspect {
+  filter: drop-shadow(0 0 2px #e53935) drop-shadow(0 0 3px #e53935);
+}
+
+/* the notes selected glow, whatever colour a review gave them */
+.sheet g.note.in-range,
+.sheet g.rest.in-range,
+.sheet g.mRest.in-range {
+  filter: drop-shadow(0 0 2px #ffb300) drop-shadow(0 0 2px #ffb300);
+}
+
+.sheet g.note.is-edited,
+.sheet g.note.is-edited * {
+  fill: #2e7d32;
+  stroke: #2e7d32;
+}
+
+.sheet g.note.is-selected,
+.sheet g.note.is-selected *,
+.sheet g.rest.is-selected,
+.sheet g.rest.is-selected * {
+  fill: #ff6f00;
+  stroke: #ff6f00;
+}
+
+/* what a review found, under the lit notes' red */
+/* the deepest colour of intonation, on the side it is wrong: higher or lower */
+.sheet g.note.review-wrong,
+.sheet g.note.review-wrong * {
+  fill: var(--review-colour, #b0128a);
+  stroke: var(--review-colour, #b0128a);
+}
+
+/* each note's own colour: its hue says sharp or flat, its depth how far */
+.sheet g.note.review-intonation,
+.sheet g.note.review-intonation * {
+  fill: var(--review-colour, #e07000);
+  stroke: var(--review-colour, #e07000);
+}
+
+/* likewise: its hue says early or late, its depth how far */
+.sheet g.note.review-rhythm,
+.sheet g.note.review-rhythm * {
+  fill: var(--review-colour, #1565c0);
+  stroke: var(--review-colour, #1565c0);
+}
+
+.sheet g.note.review-unclear,
+.sheet g.note.review-unclear * {
+  fill: #9a9a9a;
+  stroke: #9a9a9a;
+}
+
+.performance-review .review {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--bulma-border);
+  font-size: 0.85rem;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+/* on a line of its own, the buttons under it: the panel is narrow */
+.review-heading {
+  font-weight: 600;
+  flex: 1 1 calc(100% - 32px);
+}
+
+.review-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-section {
+  min-width: 14em;
+}
+
+.review-title {
+  font-weight: 600;
+}
+
+.review-intonation .review-title { color: #e07000; }
+.review-rhythm .review-title { color: #1565c0; }
+.review-unclear .review-title { color: #777; }
+
+.review-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-detail {
+  margin-left: 0.5em;
+  color: var(--bulma-text);
+}
+
+.review-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.review-note {
+  opacity: 0.8;
+}
+
+.review-tempo-curve {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: 80px;
+}
+
+.review-tempo-even {
+  stroke: var(--bulma-border);
+  stroke-dasharray: 4 4;
+}
+
+.review-tempo-label {
+  font-size: 11px;
+  fill: var(--bulma-text);
+  opacity: 0.8;
+}
+
+.recording-history .history {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.history-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.history-item {
+  padding: 6px 8px;
+  border: 1px solid var(--bulma-border);
+  border-radius: 6px;
+}
+
+.history-when {
+  font-weight: 600;
+}
+
+.history-tag {
+  margin-left: 6px;
+}
+
+.history-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.history-chart {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: 90px;
+}
+
+.history-line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.history-right { stroke: #2e7d32; }
+.history-intonation { stroke: #e07000; }
+.history-rhythm { stroke: #1565c0; }
+.history-tempo { stroke: #6a1b9a; }
+.history-right-label { fill: #2e7d32; }
+.history-intonation-label { fill: #e07000; }
+.history-rhythm-label { fill: #1565c0; }
+.history-tempo-label { fill: #6a1b9a; }
+
+.review-tempo-line {
+  fill: none;
+  stroke: #1565c0;
+  stroke-width: 2;
+}
+
+.sheet g.note.is-playing,
+.sheet g.note.is-playing *,
+.sheet g.rest.is-playing,
+.sheet g.rest.is-playing *,
+.sheet g.mRest.is-playing,
+.sheet g.mRest.is-playing * {
+  fill: #d40000;
+  stroke: #d40000;
+  color: #d40000;
+}
+
+.tuner,
+.metronome,
+.tempi,
+.passages,
+.checks {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--bulma-border);
+}
+
+.metronome-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metronome-label {
+  min-width: 4em;
+}
+
+.metronome-bpm {
+  width: 5em;
+}
+
+.tuner-note {
+  font-size: 2.4rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* -50 to +50 cents, in tune in the middle */
+.tuner-scale {
+  position: relative;
+  height: 24px;
+  margin: 8px 0 4px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #80cbc4, var(--bulma-scheme-main-bis) 45%, var(--bulma-scheme-main-bis) 55%, #f6b26b);
+}
+
+.tuner-centre {
+  position: absolute;
+  left: calc(50% - 1px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--bulma-text);
+}
+
+.tuner-needle {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 6px;
+  margin-left: -3px;
+  border-radius: 3px;
+  transition: left 0.1s linear;
+}
+
+.tuner-needle.is-in-tune {
+  background: #2e7d32;
+}
+
+.tuner-needle.is-sharp {
+  background: #e65100;
+}
+
+.tuner-needle.is-flat {
+  background: #00897b;
+}
+
+.tuner-needle.is-silent {
+  display: none;
+}
+
+.tuner-cents {
+  text-align: center;
+}
+
+/* the sheet, with the pencil over its corner */
+.sheet-area {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.annotate-button {
+  position: absolute;
+  top: 14px;
+  right: 22px;
+  z-index: 5;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--bulma-border);
+  border-radius: 22px;
+  background: var(--bulma-scheme-main);
+  color: var(--bulma-text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.annotate-button.is-active {
+  background: #ffe08a;
+  color: #3d3000;
+  border-color: #e0b800;
+}
+
+.annotate-button[hidden] {
+  display: none;
+}
+
+.annotate-done {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* each part's sound, in the Sounds drawer */
+.sound-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.sound-row {
+  display: grid;
+  grid-template-columns: minmax(0, 6em) minmax(0, 1fr) 70px 4.5em;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-row .select,
+.sound-row select {
+  width: 100%;
+}
+
+.sound-part {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sound-part.is-silent {
+  opacity: 0.5;
+}
+
+.sound-level {
+  width: 70px;
+}
+
+.sound-state {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+/* the application's mark and name, above the library */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 8px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: url("./images/logo.svg") center / contain no-repeat;
+}
+
+.brand-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* the library and a work's page */
+.library-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.library-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 14px 32px;
+  background: var(--bulma-scheme-main);
+  border-bottom: 1px solid var(--bulma-border);
+}
+
+.library-header .brand {
+  color: inherit;
+  padding: 0;
+}
+
+.library-search {
+  flex: 1 1 320px;
+  max-width: 520px;
+}
+
+.library-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.library-chip {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 5px 12px;
+  border: 1px solid var(--bulma-border);
+  border-radius: 999px;
+  background: var(--bulma-scheme-main);
+  cursor: pointer;
+}
+
+.library-chip.is-active {
+  border-color: #0f5f73;
+  background: #e3f0f2;
+  color: #0f5f73;
+  font-weight: 600;
+}
+
+.library-import {
+  margin-left: auto;
+}
+
+.library-header .language-choice {
+  flex: none;
+}
+
+/* before the header's last button, it is the one pushed to the right */
+.library-header .language-choice:has(+ .library-import) {
+  margin-left: auto;
+}
+
+.library-header .language-choice + .library-import {
+  margin-left: 0;
+}
+
+.library-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.library-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.library-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.library-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.library-section-note,
+.library-empty,
+.dialog-note {
+  color: var(--bulma-text-weak);
+  font-size: 0.9rem;
+}
+
+.library-crumbs {
+  font-size: 0.9rem;
+  color: var(--bulma-text-weak);
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--bulma-border);
+  border-radius: 12px;
+  background: var(--bulma-scheme-main);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.work-card:hover {
+  border-color: #0f5f73;
+}
+
+.work-card-title {
+  font-weight: 700;
+}
+
+.work-card-meta {
+  font-size: 0.85rem;
+  color: var(--bulma-text-weak);
+}
+
+.work-card-action {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f5f73;
+}
+
+.work-card.is-recent {
+  border-left: 4px solid #0f5f73;
+}
+
+.work-card.is-collection {
+  background: #eef5f6;
+}
+
+.work-card.is-import {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  color: #0f5f73;
+  font-weight: 600;
+  min-height: 72px;
+}
+
+.work-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bulma-border);
+  border-radius: 12px;
+  background: var(--bulma-scheme-main);
+  overflow: hidden;
+}
+
+.work-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bulma-border-weak);
+  color: inherit;
+}
+
+.work-row:hover {
+  background: #eef5f6;
+}
+
+.work-row-title {
+  font-weight: 600;
+}
+
+.work-row-meta {
+  font-size: 0.85rem;
+  color: var(--bulma-text-weak);
+}
+
+.work-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.work-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.work-subtitle {
+  color: var(--bulma-text-weak);
+}
+
+.work-page-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.work-movements {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.work-aside {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.movement-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bulma-border);
+  border-radius: 12px;
+  background: var(--bulma-scheme-main);
+}
+
+.movement-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--bulma-border-weak);
+}
+
+.movement-number {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  min-width: 2.2em;
+  color: var(--bulma-text-weak);
+}
+
+.movement-name {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.movement-title {
+  font-weight: 700;
+}
+
+.movement-meta {
+  font-size: 0.85rem;
+  color: var(--bulma-text-weak);
+}
+
+.movements-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #e3f0f2;
+  color: #0f5f73;
+}
+
+.movements-row-go {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.part-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.part-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.part-instrument {
+  min-width: 5em;
+  font-size: 0.85rem;
+  color: var(--bulma-text-weak);
+}
+
+.work-source p {
+  margin-bottom: 4px;
+}
+
+/* dialogs */
+.dialog {
+  max-width: 640px;
+  width: calc(100% - 32px);
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dialog-label {
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.dialog-choice {
+  display: block;
+}
+
+.dialog-files {
+  font-size: 0.9rem;
+}
+
+.dialog-foot {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* the score's way back to its work */
+.score-back {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-width: 6rem;
+}
+
+.score-back-link {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 28em;
+}
+
+.score-back-link:hover {
+  color: #0f5f73;
+}
+
+.score-movements {
+  font-size: 0.85rem;
+  color: var(--bulma-text-weak);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.full-score[hidden] {
+  display: none;
+}
+
+/* the measures to check: each a place on the sheet and a verdict */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.check-place {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 8px;
+  border: 1px solid var(--bulma-border);
+  border-radius: 6px;
+  background: var(--bulma-scheme-main);
+  text-align: left;
+  cursor: pointer;
+}
+
+.check-place:hover {
+  border-color: #c77700;
+}
+
+.check-where {
+  font-weight: 600;
+}
+
+.check-detail {
+  color: var(--bulma-text-weak);
+}
+
+.tempo-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* name, beat, −, tempo, +, written: aligned from one row to the next */
+.tempo-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto 4.5em auto 5.5em;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.tempo-row.is-playing {
+  background: var(--bulma-link-light);
+}
+
+.tempo-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tempo-value {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tempo-written {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.tempo-back {
+  font: inherit;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tempo-back:disabled {
+  text-decoration: none;
+  cursor: default;
+}
+
+.tempo-actions {
+  margin-top: 8px;
+}
+
+.passage-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.passage-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.passage-note {
+  opacity: 0.75;
+}

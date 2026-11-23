@@ -1,0 +1,232 @@
+//| mill-version: 1.3.0
+//| mvnDeps:
+//| - "com.goyeau::mill-scalafix::0.6.2"
+
+package build
+import com.goyeau.mill.scalafix.ScalafixModule
+import mill.*
+import scalalib.*
+import scalajslib.*
+import scalajslib.api.*
+import mill.api.BuildCtx
+import mill.scalalib.scalafmt.ScalafmtModule
+
+val scalaV = "3.10.0"
+val tapirV = "1.13.33"
+val jsoniterV = "2.41.5"
+val oxV = "1.0.9"
+val sheetMusic4jV = "0.0.3"
+
+trait BaseScala extends ScalaModule with ScalafmtModule with ScalafixModule {
+  def scalaVersion: T[String] = scalaV
+  def jvmVersion = "zulu:25"
+
+  override def scalafixConfig = Some(BuildCtx.workspaceRoot / ".scalafix.conf")
+
+  override def scalacOptions = {
+    val ciArgs = if (System.getenv("CI") != null) Seq("-Werror") else Seq()
+
+    Seq(
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-old-syntax",
+      "-rewrite",
+      "-language:adhocExtensions",
+      "-Wunused:imports,privates,locals,implicits",
+    ) ++ ciArgs
+  }
+}
+
+trait BaseScalaJS extends BaseScala with ScalaJSModule {
+  def scalaJSVersion = "1.22.0"
+  // the frontend imports its JavaScript libraries, which Vite then bundles
+  def moduleKind = ModuleKind.ESModule
+}
+
+object shared extends Module {
+  trait Shared extends BaseScala with PlatformScalaModule
+  object jvm extends Shared {
+    def mvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.softwaremill.sttp.tapir::tapir-core:$tapirV",
+      mvn"com.softwaremill.sttp.tapir::tapir-jsoniter-scala:$tapirV",
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:$jsoniterV",
+    )
+    // Macros are only needed to expand `JsonCodecMaker.make*` at compile time.
+    override def compileMvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterV",
+    )
+  }
+  object js extends Shared with BaseScalaJS {
+    def mvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.softwaremill.sttp.tapir::tapir-core::$tapirV",
+      mvn"com.softwaremill.sttp.tapir::tapir-jsoniter-scala::$tapirV",
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core::$jsoniterV",
+    )
+    override def compileMvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros::$jsoniterV",
+    )
+  }
+}
+
+object backend extends BaseScala {
+  def moduleDeps: Seq[JavaModule] = Seq(shared.jvm)
+  // the catalog's index and the like are read with codecs made at compile time
+  override def compileMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterV",
+  )
+
+  private def buildFrontend(mode: String, destDir: os.Path): PathRef = {
+    val root = BuildCtx.workspaceRoot
+    if (!os.exists(root / "node_modules"))
+      os.proc("npm", "install").call(cwd = root, stdout = os.Inherit)
+    os.proc(
+      "npm",
+      "run",
+      "build",
+      "--",
+      "--outDir",
+      destDir.toString,
+      "--emptyOutDir",
+    ).call(
+      cwd = root,
+      stdout = os.Inherit,
+      env = Map("SCALAJS_MODE" -> mode),
+    )
+    PathRef(destDir)
+  }
+
+  private def frontendDir = Task.Source(
+    Task.dest / ".." / "front-dist",
+  )
+
+  override def run(args: Task[Args]): Task.Command[Unit] = {
+    val newArgs = Task.Anon {
+      Task.log.info(s"Building frontend (fast) in ${frontendDir().path}")
+      frontend.fastLinkJS()
+      buildFrontend("fast", frontendDir().path)
+      args()
+    }
+    super.run(newArgs)
+  }
+
+  private def frontendBundle = Task {
+    Task.log.info(s"Building frontend (full) in ${Task.dest}")
+    frontend.fullLinkJS()
+    buildFrontend("full", Task.dest / "dist")
+  }
+
+  override def jar: T[PathRef] = Task {
+    val jar = Task.dest / "out.jar"
+    mill.util.Jvm.createJar(
+      jar,
+      (frontendBundle() +: localClasspath()).map(_.path).filter(os.exists),
+      manifest(),
+    )
+    PathRef(jar)
+  }
+
+  override def runClasspath: T[Seq[PathRef]] = Task {
+    frontendDir() +: super.runClasspath()
+  }
+
+  def mvnDeps: T[Seq[Dep]] = Seq(
+    mvn"ch.qos.logback:logback-classic:1.6.5",
+    mvn"com.typesafe.scala-logging::scala-logging:3.9.6",
+    mvn"com.softwaremill.sttp.tapir::tapir-files:$tapirV",
+    mvn"com.softwaremill.sttp.tapir::tapir-netty-server-sync:$tapirV",
+    mvn"com.softwaremill.ox::core:$oxV",
+    // reads the formats the page's engraver does not, to hand them on as MusicXML
+    mvn"com.sheetmusic4j:core:$sheetMusic4jV",
+    // the library: one SQLite file, its schema moved on by Flyway
+    mvn"org.xerial:sqlite-jdbc:3.53.4.0",
+    mvn"org.flywaydb:flyway-core:13.10.3",
+  )
+
+  def mainClass = Some("ripieno.backend.Main")
+
+  // the review resamples with the system's libsoxr, through the foreign function interface
+  override def forkArgs: T[Seq[String]] = Seq("--enable-native-access=ALL-UNNAMED")
+
+  // the runner, which the sound engines run as processes of their own
+  override def forkEnv: T[Map[String, String]] = Task {
+    super.forkEnv() +
+      ("RIPIENO_RUNNER_CLASSPATH" -> build.runner.runClasspath().map(_.path.toString).mkString(java.io.File.pathSeparator))
+  }
+
+  object test extends ScalaTests with TestModule.Utest with ScalafmtModule {
+    override def forkArgs: T[Seq[String]] = Seq("--enable-native-access=ALL-UNNAMED")
+    def mvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.lihaoyi::utest:0.9.5",
+      mvn"com.lihaoyi::ujson:4.4.3",
+    )
+    override def forkEnv: T[Map[String, String]] = Task {
+      super.forkEnv() +
+        // the lines' notes as VIOLET read them, which the runner's tests start from
+        ("RIPIENO_VIOLET_LINES" -> (BuildCtx.workspaceRoot / "runner/test/resources/violet").toString)
+    }
+  }
+}
+
+object frontend extends BaseScalaJS {
+  def moduleDeps: Seq[JavaModule] = Seq(shared.js)
+  def mvnDeps: T[Seq[Dep]] = Seq(
+    mvn"com.raquo::laminar::17.2.1",
+    mvn"com.softwaremill.sttp.tapir::tapir-sttp-client4::$tapirV",
+  )
+}
+
+/** The engine models run on the GPU with: Scala on the JVM, and HIP kernels
+  * compiled for one GPU, the Radeon of a Strix Halo (gfx1151).
+  */
+object runner extends BaseScala with RunnerJvm {
+  def mvnDeps: T[Seq[Dep]] = Seq(
+    mvn"com.lihaoyi::ujson:4.4.3",
+  )
+
+  private def kernelSources = Task.Source("kernels")
+
+  // The kernels' sources, with their list: the runner compiles them on the
+  // machine it runs on, with the ROCm tree it is given (`KernelCache`).
+  private def kernels = Task {
+    val out = Task.dest / "kernels"
+    os.makeDir.all(out)
+    val sources = os.list(kernelSources().path).filter(path => path.ext == "hip" || path.ext == "h")
+    sources.foreach(source => os.copy(source, out / source.last))
+    os.write(out / "sources.txt", sources.map(_.last).sorted.mkString("\n"))
+    PathRef(Task.dest)
+  }
+
+  override def resources: T[Seq[PathRef]] = Task {
+    super.resources() :+ kernels()
+  }
+
+  def mainClass = Some("ripieno.runner.ViolinSampling")
+
+  // what the tests read is downloaded as the server downloads it (`Downloaded`)
+  object test extends ScalaTests with TestModule.Utest with ScalafmtModule with RunnerJvm {
+    override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(build.backend.test)
+    def mvnDeps: T[Seq[Dep]] = Seq(
+      mvn"com.lihaoyi::utest:0.9.5",
+      mvn"com.lihaoyi::ujson:4.4.3",
+    )
+  }
+
+  /** What needs the GPU, kept apart so that `__.test` never touches it. */
+  object gpuTest extends ScalaTests with TestModule.Utest with ScalafmtModule with RunnerJvm {
+    override def moduleDeps: Seq[JavaModule] =
+      super.moduleDeps ++ Seq(build.runner.test)
+    def mvnDeps: T[Seq[Dep]] = Seq(mvn"com.lihaoyi::utest:0.9.5")
+  }
+}
+
+trait RunnerJvm extends JavaModule {
+  override def forkArgs: T[Seq[String]] = Seq(
+    "--enable-native-access=ALL-UNNAMED",
+  )
+  override def forkEnv: T[Map[String, String]] = Task {
+    val asked = Seq("RUNNER_GPU_TESTS", "RUNNER_HIP_TRACE")
+      .flatMap(name => Task.env.get(name).map(name -> _))
+    super.forkEnv() ++ asked
+  }
+}

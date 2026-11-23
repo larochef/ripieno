@@ -1,0 +1,10 @@
+/out/
+.bsp/
+.idea/
+.metals/
+.vscode/
+.bloop/
+node_modules/
+
+# research on reading scanned scores, with its datasets and checkpoints
+/omr-study/

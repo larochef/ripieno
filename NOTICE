@@ -1,0 +1,65 @@
+Ripieno
+Copyright 2026 the Ripieno authors
+
+Licensed under the Apache License, Version 2.0 (LICENSE).
+
+Parts of Ripieno are ports, to Scala and HIP, of other projects' code. Their
+notices follow.
+
+runner/ (its engine packages and kernels) comes from drift's runner, by the
+same authors.
+
+VIOLET's inference (runner/src/ripieno/runner/models/Violin*.scala, HeunSampler.scala, the
+backend's sound/violet/) is ported from VIOLET, https://github.com/User-tian/VIOLET:
+  MIT License. Copyright (c) 2026 Baotong Tian.
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions: the above copyright
+  notice and this permission notice shall be included in all copies or
+  substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+  WITHOUT WARRANTY OF ANY KIND.
+
+MIDI-DDSP's inference (runner/src/ripieno/runner/models/MidiDdsp*.scala) is
+ported from MIDI-DDSP, https://github.com/magenta/midi-ddsp, and DDSP,
+https://github.com/magenta/ddsp: Apache License 2.0, Copyright the MIDI-DDSP
+Authors and the DDSP Authors.
+
+The performance review (backend/src/ripieno/backend/review/) ports parts of
+librosa, https://github.com/librosa/librosa (pYIN, spectra, constant-Q, onsets):
+  ISC License. Copyright (c) 2013--2026, librosa development team.
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies. THE
+  SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES.
+It loads the system's libsoxr (LGPL 2.1), which Ripieno does not include.
+
+The backend's MIDI reading (sound/MidiFile.scala) follows pretty_midi,
+https://github.com/craffel/pretty-midi:
+  MIT License. Copyright (c) 2014 Colin Raffel. (Permission notice as above.)
+
+The backend's resampling (sound/Resampling.scala) ports SciPy's resample_poly,
+https://github.com/scipy/scipy:
+  BSD 3-Clause License. Copyright (c) 2001-2002 Enthought, Inc. 2003, SciPy
+  Developers. Redistribution and use in source and binary forms, with or
+  without modification, are permitted provided that redistributions retain
+  this copyright notice, this list of conditions and the disclaimer; neither
+  the name of the copyright holder nor the names of its contributors may be
+  used to endorse or promote derived products without specific prior written
+  permission. THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT ANY WARRANTY.
+
+The runner reproduces computations of PyTorch, https://github.com/pytorch/pytorch
+(its normal draws, its weight-norm kernel) and reads its checkpoints: BSD
+3-Clause License, Copyright (c) Facebook, Inc. and its affiliates.
+
+Test resources:
+- backend/test/resources/salamander/: sounds made of the Salamander Grand Piano
+  V3's samples, by Alexander Holm, Creative Commons Attribution 3.0
+  (https://github.com/sfzinstruments/SalamanderGrandPiano).
+- backend/test/resources/rendering/synthetic-mix.wav: a sound made with VIOLET.
+
+The models' weights, the sound bank (GeneralUser GS, by S. Christian Collins),
+the piano's samples and ROCm are not part of Ripieno: the server downloads them
+from where their authors publish them, under their own licences.
